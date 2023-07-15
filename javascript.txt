@@ -1,0 +1,4 @@
+function showForm() {
+  const form = document.getElementById('newForm');
+  form.style.display = 'block';
+}

